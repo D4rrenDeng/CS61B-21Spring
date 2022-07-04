@@ -106,17 +106,19 @@ public class Model extends Observable {
      *    value, then the leading two tiles in the direction of motion merge,
      *    and the trailing tile does not.
      * */
-    public void mergeDownwoard(int col, int row, boolean merged) {
+    public boolean mergeDownwoard(int col, int row, boolean merged) {
         for (int cur = row - 1; cur >= 0; cur--) {
             if (board.tile(col, cur) != null && board.tile(col, cur).value() != board.tile(col, row).value())
-                break;
+                return false;
             else if (merged == false && board.tile(col, cur) != null && board.tile(col, cur).value() == board.tile(col, row).value()) {
                 Tile t = board.tile(col, cur);
                 score += 2 * board.tile(col, row).value();
                 board.move(col, row, t);
                 merged = true;
+                return true;
             }
         }
+        return false;
     }
     public boolean tilt(Side side) {
         boolean changed;
@@ -137,11 +139,11 @@ public class Model extends Observable {
                             break;
                         }
                     }
-                    mergeDownwoard(col, row, merged);
+                    if (mergeDownwoard(col, row, merged))
                     changed = true;
                 }
                 else {
-                    mergeDownwoard(col, row, merged);
+                    if (mergeDownwoard(col, row, merged))
                     changed = true;
                 }
             }
