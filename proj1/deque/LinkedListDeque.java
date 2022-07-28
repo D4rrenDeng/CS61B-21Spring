@@ -98,6 +98,18 @@ public class LinkedListDeque<T> implements Deque<T>{
         return getRecursion(sentinel.next, index);
     }
 
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Deque))
+            return false;
+        Deque<T> subject = (Deque<T>) o;
+        if (size != subject.size())
+            return false;
+        for (int i = 0; i < size; i++)
+            if (!get(i).equals(subject.get(i)))
+                return false;
+        return true;
+    }
+
     public Iterator<T> iterator(){
         return new LinkedListDequeIterator();
     }
@@ -115,18 +127,6 @@ public class LinkedListDeque<T> implements Deque<T>{
             T returnItem = cur.item;
             cur = cur.next;
             return returnItem;
-        }
-
-        public boolean equals(Object o) {
-            if (o == null || !(o instanceof Deque))
-                return false;
-            Deque<T> subject = (Deque<T>) o;
-            if (size != subject.size())
-                return false;
-            for (int i = 0; i < size; i++)
-                if (!get(i).equals(subject.get(i)))
-                    return false;
-            return true;
         }
     }
 }

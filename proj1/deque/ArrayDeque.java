@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class ArrayDeque<T> implements Deque<T> {
     private T[] items;
     private int size;
@@ -36,7 +38,7 @@ public class ArrayDeque<T> implements Deque<T> {
             items = resizing();
         items[nextFirst] = item;
         size++;
-        nextFirst = nextFirst - 1 < 0 ? nextFirst + items.length : nextFirst - 1;
+        nextFirst = nextFirst - 1 < 0 ? nextFirst - 1 + items.length : nextFirst - 1;
     }
 
     public void addLast(T item) {
@@ -86,5 +88,40 @@ public class ArrayDeque<T> implements Deque<T> {
                 return null;
         int first = (nextFirst + 1) % items.length;
         return items[(first + index) % items.length];
+    }
+
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Deque))
+            return false;
+        Deque<T> subject = (Deque<T>) o;
+        if (size != subject.size())
+            return false;
+        for (int i = 0; i < size; i++)
+            if (!get(i).equals(subject.get(i)))
+                return false;
+        return true;
+    }
+
+    public Iterator<T> iterator(){
+        return new ArrayDeque.ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int cur;
+        private int count;
+        public ArrayDequeIterator() {
+            cur = (nextFirst + 1) / items.length;
+            count = 0;
+        }
+        public boolean hasNext() {
+            return count <= size;
+        }
+
+        public T next() {
+            T returnItem = items[cur];
+            cur = (cur + 1) % items.length;
+            count++;
+            return returnItem;
+        }
     }
 }
