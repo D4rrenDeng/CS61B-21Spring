@@ -60,9 +60,10 @@ public class ArrayDeque<T> implements Deque<T> {
     public void printDeque() {
         int first = (nextFirst + 1) % items.length;
         for (int i = 1; i < size; i++) {
-            System.out.print(items[first++] + " ");
+            System.out.print(items[first % items.length] + " ");
+            first++;
         }
-        System.out.println(items[first]);
+        System.out.println(items[first % items.length]);
     }
 
     public T removeFirst() {
