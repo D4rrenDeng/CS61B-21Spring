@@ -122,7 +122,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         private int cur;
         private int count;
         ArrayDequeIterator() {
-            cur = (nextFirst + 1) / items.length;
+            cur = (nextFirst + 1) % items.length;
             count = 1;
         }
         public boolean hasNext() {
