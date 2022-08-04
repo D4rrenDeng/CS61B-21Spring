@@ -123,6 +123,29 @@ public class LinkedListDequeTest {
     }
 
     @Test
+    public void failedTest1() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        lld1.addFirst(0);
+        lld1.addFirst(1);
+        int removed = lld1.removeLast();
+        assertEquals(0, removed);
+        removed = lld1.removeLast();
+        assertEquals(1, removed);
+        lld1.addFirst(4);
+        removed = lld1.removeLast();
+        assertEquals(4, removed);
+    }
+
+    @Test
+    public void failedTest2() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        lld1.addFirst(0);
+        lld1.addFirst(1);
+        lld1.addFirst(4);
+        assertEquals(lld1.get(2), lld1.getRecursive(2));
+    }
+
+    @Test
     /* RandomizedTest */
     public void randomizedTest() {
         LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
