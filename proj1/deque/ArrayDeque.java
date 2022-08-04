@@ -19,16 +19,16 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         T[] newItems = (T[]) new Object[capacity];
         int first = (nextFirst + 1) % items.length;
         int last = nextLast - 1 < 0 ? nextLast - 1 + items.length : nextLast - 1;
-        if (last == items.length - 1) {
-            System.arraycopy(items, 0, newItems, 0, size);
+        if (first <= last) {
+            System.arraycopy(items, first, newItems, 0, size);
             nextFirst = newItems.length - 1;
             nextLast = size;
         } else {
             System.arraycopy(items, 0, newItems, 0, last + 1);
-            System.arraycopy(items, last + 1, newItems, newItems.length - items.length + last
-                    + 1, items.length - last - 1);
-            nextFirst = newItems.length - items.length + last;
-            nextLast = last + 1;
+            System.arraycopy(items, first, newItems, newItems.length - items.length
+                    + first, items.length - first);
+            nextFirst = (newItems.length - 1 - items.length + first) % newItems.length;
+            nextLast = (last + 1) % newItems.length;
         }
         return newItems;
     }
@@ -68,7 +68,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (size == 0) {
             return null;
         }
-        if (size / items.length < 0.25) {
+        if (((double) size / items.length) < 0.25) {
             items = resizing(items.length / 2);
         }
         nextFirst = (nextFirst + 1) % items.length;
@@ -81,7 +81,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (size == 0) {
             return null;
         }
-        if (size / items.length < 0.25) {
+        if (((double) size / items.length) < 0.25) {
             items = resizing(items.length / 2);
         }
         nextLast = (nextLast - 1) < 0 ? nextLast - 1 + items.length : nextLast - 1;
