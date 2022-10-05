@@ -20,18 +20,14 @@ public class Main {
 
         switch(firstArg) {
             case "init":
-                // TODO: handle the `init` command
-                validateGitletDir();
                 validateNumArgs(args, 1);
                 Repository.initCommand();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
                 validateGitletDir();
                 validateNumArgs(args, 2);
                 Repository.addCommand(args[1]);
                 break;
-            // TODO: FILL THE REST IN
             case "commit":
                 validateGitletDir();
                 validateNumArgs(args, 2);

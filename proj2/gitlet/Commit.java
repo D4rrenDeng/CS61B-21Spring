@@ -9,11 +9,10 @@ import java.util.*;
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
+ *  @author Darren Deng
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -23,8 +22,7 @@ public class Commit implements Serializable {
     /** The message of this Commit. */
     private String message;
     /** The timestamp of this Commit. */
-    private Date date;
-    /** TODO: Mapping of files to blob references. */
+    private String date;
     /** Parent commit reference */
     private String parent;
     /** Second parent commit reference */
@@ -33,7 +31,7 @@ public class Commit implements Serializable {
     private HashMap<String, String> files = new HashMap<>();
 
     public Commit(){}
-    public Commit(String message, Date date, String parent, String secondParent) {
+    public Commit(String message, String date, String parent, String secondParent) {
         this.message = message;
         this.date = date;
         this.parent = parent;
@@ -83,18 +81,17 @@ public class Commit implements Serializable {
         return secondParent;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
     // copy constructor without copying the parents' commit
     public Commit copyCommit() {
         Commit newCommit = new Commit();
         newCommit.message = this.message;
-        newCommit.date = new Date(System.currentTimeMillis());
+        newCommit.date = String.format("%1$ta %1$tb %1$te %1$tH:%1$tM:%1$tS %1$tY %1$tz", new Date(System.currentTimeMillis()));
         newCommit.parent = null;
         newCommit.secondParent = null;
         newCommit.files = this.files;
         return newCommit;
     }
-    /* TODO: fill in the rest of this class. */
 }

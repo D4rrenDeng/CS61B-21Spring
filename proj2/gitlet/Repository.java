@@ -1,24 +1,22 @@
 package gitlet;
 
-import edu.princeton.cs.algs4.StdOut;
-import jdk.jshell.execution.Util;
-import org.apache.commons.math3.stat.inference.GTest;
+//import edu.princeton.cs.algs4.StdOut;
+//import jdk.jshell.execution.Util;
+//import org.apache.commons.math3.stat.inference.GTest;
 
 import java.io.File;
 import static gitlet.Utils.*;
+
 import java.util.*;
 
-// TODO: any imports you need here
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Darren Deng
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -43,7 +41,6 @@ public class Repository {
     public static String head;
     public static String activeBranch;
     public static HashMap<String, String> branches;
-    /* TODO: fill in the rest of this class. */
 
     public static void initCommand(){
         if (GITLET_DIR.exists()) {
@@ -62,11 +59,10 @@ public class Repository {
         writeObject(stageAddFile, stageToAdd);
         writeObject(stageRemoveFile, stageToRemove);
         /** create one commit with initial message */
-        Commit newCommit = new Commit("initial commit", new Date(0), null, null);
-        /** TODO: need to double check if the commit object name should be in this way */
+        Commit newCommit = new Commit("initial commit", String.format("%1$ta %1$tb %1$te %1$tH:%1$tM:%1$tS %1$tY %1$tz", new Date(0)), null, null);
         /** change file name to SHA-1 rendered as hexadecimal string */
-        String sha = sha1(newCommit);
-        branches = (HashMap) readObject(BRANCH_FILE, HashMap.class);
+        byte[] newCommitByte = serialize(newCommit);
+        String sha = sha1(newCommitByte);
         branches.put("master", sha);
         activeBranch = "master";
         head = sha;
@@ -103,6 +99,8 @@ public class Repository {
                 if (stageToRemove.contains(fileName)) {
                     stageToRemove.remove(fileName);
                 }
+            } else {
+                stageToAdd.put(fileName, sha);
             }
         } else {
             stageToAdd.put(fileName, sha);
@@ -126,7 +124,7 @@ public class Repository {
         if (stageToAdd.isEmpty() && stageToRemove.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
-        } else if (message == "") {
+        } else if (message.equals("")) {
             System.out.println("Please enter a commit message.");
             System.exit(0);
         } else {
@@ -143,7 +141,8 @@ public class Repository {
             for (String key : stageToRemove) {
                 newHeadCommit.removeFile(key);
             }
-            String sha = sha1(newHeadCommit);
+            byte[] newHeadCommitByte = serialize(newHeadCommit);
+            String sha = sha1(newHeadCommitByte);
             head = sha;
             branches.put(activeBranch, sha);
             File newCommitFile = join(COMMIT_DIR, sha);
@@ -174,9 +173,7 @@ public class Repository {
         }
         if (headCommit.containsFile(fileName)) {
             stageToRemove.add(fileName);
-            if (file.exists()) {
-                file.delete();
-            }
+            restrictedDelete(file);
         }
         writeObject(stageAddFile, stageToAdd);
         writeObject(stageRemoveFile, stageToRemove);
@@ -189,9 +186,9 @@ public class Repository {
             File curFile = join(COMMIT_DIR, curSha);
             Commit curCommit = (Commit) readObject(curFile, Commit.class);
             if (curCommit.getSecondParent() == null) {
-                log = log + "===\ncommit " + curSha + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n";
+                log = log + "===\ncommit " + curSha + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n\n";
             } else {
-                log = log + "===\ncommit " + curSha + "\nMerge: " + curCommit.getParent().substring(0, 7) + " " + curCommit.getSecondParent().substring(0, 7) + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n";
+                log = log + "===\ncommit " + curSha + "\nMerge: " + curCommit.getParent().substring(0, 7) + " " + curCommit.getSecondParent().substring(0, 7) + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n\n";
             }
             curSha = curCommit.getParent();
         }
@@ -205,9 +202,9 @@ public class Repository {
             File curCommitFile = join(COMMIT_DIR, commit);
             Commit curCommit = (Commit) readObject(curCommitFile, Commit.class);
             if (curCommit.getSecondParent() == null) {
-                log = log + "===\ncommit " + commit + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n";
+                log = log + "===\ncommit " + commit + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n\n";
             } else {
-                log = log + "===\ncommit " + commit + "\nMerge: " + curCommit.getParent().substring(0, 7) + " " + curCommit.getSecondParent().substring(0, 7) + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n";
+                log = log + "===\ncommit " + commit + "\nMerge: " + curCommit.getParent().substring(0, 7) + " " + curCommit.getSecondParent().substring(0, 7) + "\nDate: " + curCommit.getDate() + "\n" + curCommit.getMessage() + "\n\n";
             }
         }
         System.out.println(log);
@@ -272,7 +269,7 @@ public class Repository {
         status += "\n";
 
         // Modifications Not Staged for Commit Section
-        status += "=== Modifications Not Staged For Commit\n";
+        status += "=== Modifications Not Staged For Commit ===\n";
         List<String> modList = new ArrayList<>();
         for (String file : filesCWD) {
             if (headCommit.getFiles().containsKey(file)) {
@@ -299,6 +296,13 @@ public class Repository {
                 }
             }
         }
+        // not staged for removal, but tracked in the current commit and deleted from the working directory
+        for (String file : headCommit.getFiles().keySet()) {
+            File curFile = join(CWD, file);
+            if (!curFile.exists() && !stageToRemove.contains(file)) {
+                modList.add(file + " (deleted)");
+            }
+        }
         Collections.sort(modList);
         for (String modFile : modList) {
             status = status + modFile + "\n";
@@ -309,8 +313,10 @@ public class Repository {
         status += "=== Untracked Files ===\n";
         List<String> untrackedList = new ArrayList<>();
         for (String file : filesCWD) {
-            File curFile = join(CWD, file);
-            if (!stageToRemove.contains(file) && headCommit.getFiles().containsKey(file) && !curFile.exists()) {
+            if (!stageToAdd.containsKey(file) && !headCommit.getFiles().containsKey(file)) {
+                untrackedList.add(file);
+            }
+            else if (stageToRemove.contains(file)) {
                 untrackedList.add(file);
             }
         }
@@ -318,7 +324,6 @@ public class Repository {
         for (String untrackedFile : untrackedList) {
             status = status + untrackedFile + "\n";
         }
-        status += "\n";
         System.out.println(status);
     }
 
@@ -413,9 +418,7 @@ public class Repository {
         for (HashMap.Entry<String, String> entry : headFiles.entrySet()) {
             if (!newHeadFiles.containsKey(entry.getKey())) {
                 File file = join(CWD, entry.getValue());
-                if (file.exists()) {
-                    file.delete();
-                }
+                restrictedDelete(file);
             }
         }
         // add all the files from the checked-out branch into the CWD
@@ -535,7 +538,7 @@ public class Repository {
         // If an untracked file in the current commit would be overwitten or deleted by the merge, print error message
         for (String file : filesCWD) {
             if (!curFiles.containsKey(file) && splitFiles.containsKey(file)) {
-                System.out.printf("There is an untracked file in the way; delete it, or add and commit it first.");
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
@@ -552,16 +555,14 @@ public class Repository {
         }
         /* Any files that have been modified in the given branch since the split point, but not modified in
         the current branch since the split point should be changed to their versions in the given branch */
-        for (String file : filesCWD) {
-            if (givenFiles.containsKey(file) && curFiles.containsKey(file)) {
-                File fileCWD = join(CWD, file);
-                String contentCWD = readContentsAsString(fileCWD);
-                String shaCWD = sha1(contentCWD);
-                if (shaCWD.equals(curFiles.get(file)) && !shaCWD.equals(givenFiles.get(file))) {
-                    File newFile = join(BLOB_DIR, givenFiles.get(file));
+        for (HashMap.Entry<String, String> entry : splitFiles.entrySet()) {
+            if (givenFiles.containsKey(entry.getKey()) && curFiles.containsKey(entry.getKey())) {
+                if (entry.getValue().equals(curFiles.get(entry.getKey())) && !entry.getValue().equals(givenFiles.get(entry.getKey()))) {
+                    File newFile = join(BLOB_DIR, givenFiles.get(entry.getKey()));
                     String newContent = readContentsAsString(newFile);
+                    File fileCWD = join(CWD, entry.getKey());
                     writeContents(fileCWD, newContent);
-                    stageToAdd.put(file, givenFiles.get(file));
+                    stageToAdd.put(entry.getKey(), givenFiles.get(entry.getKey()));
                 }
             }
         }
@@ -573,9 +574,9 @@ public class Repository {
                 stageToAdd.put(entry.getKey(), entry.getValue());
             }
         }
-        for (HashMap.Entry<String, String> entry : splitFiles.entrySet()) {
-            /* Any files present at the split point, unmodified in the current branch, and absent in the given branch
+        /* Any files present at the split point, unmodified in the current branch, and absent in the given branch
             should be removed (and untracked). */
+        for (HashMap.Entry<String, String> entry : splitFiles.entrySet()) {
             if (entry.getValue().equals(curFiles.get(entry.getKey())) && !givenFiles.containsKey(entry.getKey())) {
                 removeCommand(entry.getKey());
             }
@@ -640,7 +641,7 @@ public class Repository {
         writeObject(stageRemoveFile, stageToRemove);
         String commitMessage = "Merged" + givenBranch + "into" + activeBranch + ".";
         commitCommand(commitMessage);
-        if (mergeConflict == true) {
+        if (mergeConflict) {
             System.out.println("Encountered a merge conflict.");
         }
         head = (String) readObject(HEAD_FILE, String.class);
