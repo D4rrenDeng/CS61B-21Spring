@@ -90,6 +90,31 @@ public class Main {
                 validateNumArgs(args, 2);
                 Repository.mergeCommand(args[1]);
                 break;
+            case "add-remote":
+                validateGitletDir();
+                validateNumArgs(args, 3);
+                Repository.addRemoteCommand(args[1], args[2]);
+                break;
+            case "rm-remote":
+                validateGitletDir();
+                validateNumArgs(args, 2);
+                Repository.rmRemoteCommand(args[1]);
+                break;
+            case "push":
+                validateGitletDir();
+                validateNumArgs(args, 2);
+                Repository.pushCommand(args[1], args[2]);
+                break;
+            case "fetch":
+                validateGitletDir();
+                validateNumArgs(args, 3);
+                Repository.fetchCommand(args[1], args[2]);
+                break;
+            case "pull":
+                validateGitletDir();
+                validateNumArgs(args, 3);
+                Repository.pullCommand(args[1], args[2]);
+                break;
             default:
                 System.out.print("No command with that name exists.");
                 System.exit(0);
