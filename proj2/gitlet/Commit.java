@@ -1,12 +1,10 @@
 package gitlet;
 
-// TODO: any imports you need here
 
-import java.io.Serializable; // TODO: You'll likely use this in this class
+import java.io.Serializable;
 import java.util.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Darren Deng
@@ -30,7 +28,9 @@ public class Commit implements Serializable {
     /** Files contained in this commit */
     private HashMap<String, String> files = new HashMap<>();
 
-    public Commit(){}
+    public Commit() {
+
+    }
     public Commit(String message, String date, String parent, String secondParent) {
         this.message = message;
         this.date = date;
@@ -68,9 +68,9 @@ public class Commit implements Serializable {
         files.remove(key);
     }
 
-    public void setParents(String parent, String secondParent) {
-        this.parent = parent;
-        this.secondParent = secondParent;
+    public void setParents(String parent1, String parent2) {
+        this.parent = parent1;
+        this.secondParent = parent2;
     }
 
     public String getParent() {
@@ -88,7 +88,8 @@ public class Commit implements Serializable {
     public Commit copyCommit() {
         Commit newCommit = new Commit();
         newCommit.message = this.message;
-        newCommit.date = String.format("%1$ta %1$tb %1$te %1$tH:%1$tM:%1$tS %1$tY %1$tz", new Date(System.currentTimeMillis()));
+        newCommit.date = String.format("%1$ta %1$tb %1$te %1$tH:%1$tM:%1$tS %1$tY %1$tz",
+                new Date(System.currentTimeMillis()));
         newCommit.parent = null;
         newCommit.secondParent = null;
         newCommit.files = this.files;

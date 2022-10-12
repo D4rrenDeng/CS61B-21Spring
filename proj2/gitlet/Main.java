@@ -133,6 +133,7 @@ public class Main {
         File GITLET_DIR = Utils.join(CWD, ".gitlet");
         if (!GITLET_DIR.exists()) {
             System.out.println("Not in an initialized Gitlet directory.");
+            System.exit(0);
         }
     }
 }
