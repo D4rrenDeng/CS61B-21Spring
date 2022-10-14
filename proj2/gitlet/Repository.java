@@ -343,10 +343,10 @@ public class Repository {
             List<String> commits = plainFilenamesIn(COMMIT_DIR);
 
             for (String commit : commits) {
-                    if (commitID.equals(commit.substring(0, commitID.length()))) {
-                        commitID = commit;
-                        break;
-                    }
+                if (commitID.equals(commit.substring(0, commitID.length()))) {
+                    commitID = commit;
+                    break;
+                }
             }
         }
         return commitID;
@@ -592,10 +592,10 @@ public class Repository {
                     && !curFiles.containsKey(entry.getKey())
                     && !entry.getValue().equals(givenFiles.get(entry.getKey()))) {
                 mergeConflict = true;
-                String curContent = curFiles.containsKey(entry.getKey()) ?
-                        readContentsAsString(join(BLOB_DIR, curFiles.get(entry.getKey()))) : "\n";
-                String givenContent = givenFiles.containsKey(entry.getKey()) ?
-                        readContentsAsString(join(BLOB_DIR, givenFiles.get(entry.getKey()))) : "\n";
+                String curContent = curFiles.containsKey(entry.getKey())
+                        ? readContentsAsString(join(BLOB_DIR, curFiles.get(entry.getKey()))) : "\n";
+                String givenContent = givenFiles.containsKey(entry.getKey())
+                        ? readContentsAsString(join(BLOB_DIR, givenFiles.get(entry.getKey()))) : "\n";
                 String newContent = "<<<<<<< HEAD\n" + curContent + "\n=======\n"
                         + givenContent + ">>>>>>>";
                 File newFile = join(CWD, entry.getKey());
