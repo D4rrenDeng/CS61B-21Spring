@@ -63,11 +63,20 @@ public class Main {
                 if (args.length == 2) {
                     Repository.checkoutBranchCommand(args[1]);
                 } else if (args.length == 3) {
+                    if (!args[1].equals("--")) {
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
+                    }
                     Repository.checkoutFileCommand(args[2]);
                 } else if (args.length == 4) {
+                    if (!args[2].equals("--")) {
+                        System.out.println("Incorrect operands.");
+                        System.exit(0);
+                    }
                     Repository.checkoutFileCommand(args[1], args[3]);
                 } else {
                     System.out.println("Incorrect operands.");
+                    System.exit(0);
                 }
                 break;
             case "branch":
@@ -102,7 +111,7 @@ public class Main {
                 break;
             case "push":
                 validateGitletDir();
-                validateNumArgs(args, 2);
+                validateNumArgs(args, 3);
                 Repository.pushCommand(args[1], args[2]);
                 break;
             case "fetch":

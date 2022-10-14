@@ -73,6 +73,10 @@ public class Commit implements Serializable {
         this.secondParent = parent2;
     }
 
+    public void setSecondParent(String parent2) {
+        this.secondParent = parent2;
+    }
+
     public String getParent() {
         return parent;
     }
