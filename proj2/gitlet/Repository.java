@@ -595,7 +595,8 @@ public class Repository {
                 String curContent = curFiles.containsKey(entry.getKey())
                         ? readContentsAsString(join(BLOB_DIR, curFiles.get(entry.getKey()))) : "\n";
                 String givenContent = givenFiles.containsKey(entry.getKey())
-                        ? readContentsAsString(join(BLOB_DIR, givenFiles.get(entry.getKey()))) : "\n";
+                        ? readContentsAsString(join(BLOB_DIR,
+                        givenFiles.get(entry.getKey()))) : "\n";
                 String newContent = "<<<<<<< HEAD\n" + curContent + "\n=======\n"
                         + givenContent + "\n>>>>>>>";
                 File newFile = join(CWD, entry.getKey());
