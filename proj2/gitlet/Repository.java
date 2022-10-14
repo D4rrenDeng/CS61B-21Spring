@@ -597,7 +597,7 @@ public class Repository {
                 String givenContent = givenFiles.containsKey(entry.getKey())
                         ? readContentsAsString(join(BLOB_DIR, givenFiles.get(entry.getKey()))) : "\n";
                 String newContent = "<<<<<<< HEAD\n" + curContent + "\n=======\n"
-                        + givenContent + ">>>>>>>";
+                        + givenContent + "\n>>>>>>>";
                 File newFile = join(CWD, entry.getKey());
                 writeContents(newFile, newContent);
                 stageToAdd.put(entry.getKey(), sha1(newContent));
@@ -617,7 +617,7 @@ public class Repository {
                 String curContent = readContentsAsString(curFile);
                 String givenContent = readContentsAsString(givenFile);
                 String newContent = "<<<<<<< HEAD\n" + curContent + "\n=======\n"
-                        + givenContent + ">>>>>>>";
+                        + givenContent + "\n>>>>>>>";
                 File newFile = join(CWD, entry.getKey());
                 writeContents(newFile, newContent);
                 stageToAdd.put(entry.getKey(), sha1(newContent));
