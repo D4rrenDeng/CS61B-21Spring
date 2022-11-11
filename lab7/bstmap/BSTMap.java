@@ -24,7 +24,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         System.out.println();
     }
 
-    public void inOrder(BSTNode<K, V> node) {
+    private void inOrder(BSTNode<K, V> node) {
         if (node == null) {
             return;
         }
